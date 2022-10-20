@@ -60,6 +60,67 @@ const Spotify = {
         }));
       });
   },
+
+  savePlaylist(playlistName, array) {
+    if (!playlistName || array) {
+      return;
+    }
+    const accessToken = Spotify.getAccessToken();
+    let userId;
+    const headers = { Authorization: `Bearer ${accessToken}` };
+
+    //get user’s Spotify username
+    return fetch(`https://api.spotify.com/v1/me/${userId}`, { headers })
+      .then(
+        (response) => {
+          if (response.ok) {
+            return response.json();
+          }
+          throw new Error("request failed");
+        },
+        (networkError) => console.log(networkError.message)
+      )
+      .then((jsonResponse) => {
+        userId = jsonResponse.id;
+        return fetch(`https://api.spotify.com/v1/user/${userId}/playlists`, {
+          headers,
+          method: "POST",
+          body: JSON.stringify({ name: playlistName }),
+        })
+          .then(
+            (response) => {
+              if (response.ok) {
+                return response.json();
+              }
+              throw new Error("request failed");
+            },
+            (networkError) => console.log(networkError)
+          )
+          .then((jsonResponse) => {
+            const playListId = jsonResponse.id;
+            return fetch(
+              `https://api.spotify.com/v1/playlists/${playListId}/tracks`,
+              {
+                headers,
+                method: "POST",
+                body: JSON.stringify({ uris: array }),
+              }
+            )
+              .then(
+                (response) => {
+                  if (response.ok) {
+                    return response.json();
+                  }
+                  throw new Error("request failed");
+                },
+                (networkError) => console.log(networkError)
+              )
+              .then((jsonResponse) => {
+                return jsonResponse.snapshot_id;
+              });
+          });
+      });
+  },
 };
 
 export default Spotify;

@@ -3,6 +3,7 @@ import SearchBar from "../SearchBar/SearchBar";
 import SearchResults from "../SearchResults/SearchResults";
 import Playlist from "../Playlist/Playlist";
 import "./App.css";
+import Spotify from "../../util/Spotify";
 
 class App extends React.Component {
   constructor(props) {
@@ -10,22 +11,10 @@ class App extends React.Component {
     this.state = {
       searchResults: [
         {
-          name: "dont show up",
-          artist: "dua lipa",
-          album: "dont start now",
+          name: "malibu",
+          artist: "miley cyrus",
+          album: "usa",
           id: 1,
-        },
-        {
-          name: "detalhes",
-          artist: "roberto carlos",
-          album: "o rei",
-          id: 2,
-        },
-        {
-          name: "sal",
-          artist: "marisa monte",
-          album: "portas",
-          id: 3,
         },
       ],
 
@@ -53,6 +42,9 @@ class App extends React.Component {
     };
     this.addTrack = this.addTrack.bind(this);
     this.removeTrack = this.removeTrack.bind(this);
+    this.renamePlaylist = this.renamePlaylist.bind(this);
+    this.savePlaylist = this.savePlaylist.bind(this);
+    this.search = this.search.bind(this);
   }
 
   addTrack(newTrack) {
@@ -79,6 +71,36 @@ class App extends React.Component {
     });
   }
 
+  renamePlaylist(newName) {
+    this.setState({
+      playListName: newName,
+    });
+  }
+
+  savePlaylist() {
+    const trackURIs = this.state.playlistTracks.map((track) => {
+      return track.uri;
+    });
+  }
+
+  search(userInput) {
+    Spotify.search(userInput).then((searchResults) => {
+      this.setState({
+        searchResults: searchResults,
+      });
+    });
+    // this.setState({
+    //   searchResults: [
+    //     {
+    //       name: "deu",
+    //       artist: "certo",
+    //       album: "amem",
+    //       id: 10,
+    //     },
+    //   ],
+    // });
+  }
+
   render() {
     return (
       <div>
@@ -86,7 +108,7 @@ class App extends React.Component {
           Ja<span className="highlight">mmm</span>ing
         </h1>
         <div className="App">
-          <SearchBar />
+          <SearchBar onSearch={this.search} />
           <div className="App-playlist">
             <SearchResults
               onAdd={this.addTrack}
@@ -96,6 +118,8 @@ class App extends React.Component {
               playListName={this.state.playListName}
               playlistTracks={this.state.playlistTracks}
               onRemove={this.removeTrack}
+              renamePlaylist={this.renamePlaylist}
+              onSave={this.savePlaylist}
             />
           </div>
         </div>

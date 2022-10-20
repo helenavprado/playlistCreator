@@ -1,5 +1,6 @@
 import React from "react";
 import SearchBar from "../SearchBar/SearchBar";
+
 import SearchResults from "../SearchResults/SearchResults";
 import Playlist from "../Playlist/Playlist";
 import "./App.css";
@@ -11,40 +12,28 @@ class App extends React.Component {
     this.state = {
       searchResults: [
         {
-          name: "malibu",
-          artist: "miley cyrus",
-          album: "usa",
-          id: 1,
-        },
-      ],
-
-      playListName: "The Ultimate Playlist",
-      playlistTracks: [
-        {
-          name: "ovelha negra",
-          artist: "rita lee",
-          album: "amor e sexo",
-          id: 4,
-        },
-        {
-          name: "descobridor dos 7 mares",
-          artist: "lulu santos",
-          album: "areia",
-          id: 5,
-        },
-        {
           name: "gostava tanto de voce",
           artist: "tim maia",
           album: "voce",
           id: 6,
         },
       ],
+      playListName: "New Playlist",
+      playlistTracks: [],
     };
     this.addTrack = this.addTrack.bind(this);
     this.removeTrack = this.removeTrack.bind(this);
     this.renamePlaylist = this.renamePlaylist.bind(this);
-    this.savePlaylist = this.savePlaylist.bind(this);
+    // this.savePlaylist = this.savePlaylist.bind(this);
     this.search = this.search.bind(this);
+  }
+
+  search(userInput) {
+    Spotify.search(userInput).then((searchResults) => {
+      this.setState({
+        searchResults: searchResults,
+      });
+    });
   }
 
   addTrack(newTrack) {
@@ -77,29 +66,11 @@ class App extends React.Component {
     });
   }
 
-  savePlaylist() {
-    const trackURIs = this.state.playlistTracks.map((track) => {
-      return track.uri;
-    });
-  }
-
-  search(userInput) {
-    Spotify.search(userInput).then((searchResults) => {
-      this.setState({
-        searchResults: searchResults,
-      });
-    });
-    // this.setState({
-    //   searchResults: [
-    //     {
-    //       name: "deu",
-    //       artist: "certo",
-    //       album: "amem",
-    //       id: 10,
-    //     },
-    //   ],
-    // });
-  }
+  // savePlaylist() {
+  //   const trackURIs = this.state.playlistTracks.map((track) => {
+  //     return track.uri;
+  //   });
+  // }
 
   render() {
     return (

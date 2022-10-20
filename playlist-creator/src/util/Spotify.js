@@ -32,46 +32,25 @@ const Spotify = {
     }
   },
 
-  // search(userInput) {
-  //   const accessToken = Spotify.getAccessToken();
-  //   const searchh = async (userInput) => {
-  //     try {
-  //       const response = await fetch(
-  //         `https://api.spotify.com/v1/search?type=track&q=${userInput}`,
-  //         { headers: { Authorization: `Bearer ${accessToken}` } }
-  //       );
-  //       if (response.ok) {
-  //         const jsonResponse = await response.json();
-  //         return jsonResponse.tracks.items.map((track) => ({
-  //           id: track.id,
-  //           name: track.name,
-  //           artist: track.artists[0].name,
-  //           album: track.album.name,
-  //           uri: track.uri,
-  //         }));
-  //       }
-
-  //       throw new Error("request failed");
-  //     } catch (error) {
-  //       console.log(error);
-  //     }
-  //   };
-  // },
-
   search(userInput) {
-    console.log(`spotify.search user input ${userInput}`);
     const accessToken = Spotify.getAccessToken();
-    fetch(`https://api.spotify.com/v1/search?q=${userInput}&type=track`, {
-      headers: { Authorization: `Bearer ${accessToken}` },
-    })
-      .then((response) => {
-        return response.json();
-      })
+    return fetch(
+      `https://api.spotify.com/v1/search?type=track&q=${userInput}`,
+      { headers: { Authorization: `Bearer ${accessToken}` } }
+    )
+      .then(
+        (response) => {
+          if (response.ok) {
+            return response.json();
+          }
+          throw new Error("request failed");
+        },
+        (networkError) => console.log(networkError.message)
+      )
       .then((jsonResponse) => {
         if (!jsonResponse.tracks) {
           return [];
         }
-        console.log(jsonResponse.tracks);
         return jsonResponse.tracks.items.map((track) => ({
           id: track.id,
           name: track.name,

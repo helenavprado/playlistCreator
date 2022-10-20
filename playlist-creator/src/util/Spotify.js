@@ -62,7 +62,7 @@ const Spotify = {
   },
 
   savePlaylist(playlistName, array) {
-    if (!playlistName || array) {
+    if (!playlistName || !array.length) {
       return;
     }
     const accessToken = Spotify.getAccessToken();
@@ -70,54 +70,46 @@ const Spotify = {
     const headers = { Authorization: `Bearer ${accessToken}` };
 
     //get user’s Spotify username
-    return fetch(`https://api.spotify.com/v1/me/${userId}`, { headers })
-      .then(
-        (response) => {
-          if (response.ok) {
-            return response.json();
-          }
-          throw new Error("request failed");
-        },
-        (networkError) => console.log(networkError.message)
-      )
+    return fetch(`https://api.spotify.com/v1/me`, { headers: headers })
+      .then((response) => {
+        if (response.ok) {
+          return response.json();
+        }
+      })
       .then((jsonResponse) => {
         userId = jsonResponse.id;
-        return fetch(`https://api.spotify.com/v1/user/${userId}/playlists`, {
-          headers,
+        return fetch(`https://api.spotify.com/v1/users/${userId}/playlists`, {
+          headers: headers,
           method: "POST",
           body: JSON.stringify({ name: playlistName }),
         })
-          .then(
-            (response) => {
-              if (response.ok) {
-                return response.json();
-              }
-              throw new Error("request failed");
-            },
-            (networkError) => console.log(networkError)
-          )
+          .then((response) => {
+            if (response.ok) {
+              return response.json();
+            }
+          })
           .then((jsonResponse) => {
             const playListId = jsonResponse.id;
             return fetch(
-              `https://api.spotify.com/v1/playlists/${playListId}/tracks`,
+              `https://api.spotify.com/v1/users/${userId}/playlists/${playListId}/tracks`,
               {
-                headers,
+                headers: headers,
                 method: "POST",
                 body: JSON.stringify({ uris: array }),
               }
-            )
-              .then(
-                (response) => {
-                  if (response.ok) {
-                    return response.json();
-                  }
-                  throw new Error("request failed");
-                },
-                (networkError) => console.log(networkError)
-              )
-              .then((jsonResponse) => {
-                return jsonResponse.snapshot_id;
-              });
+            );
+            // .then(
+            //   (response) => {
+            //     if (response.ok) {
+            //       return response.json();
+            //     }
+            //     throw new Error("request failed");
+            //   },
+            //   (networkError) => console.log(networkError)
+            // )
+            // .then((jsonResponse) => {
+            //   return jsonResponse.snapshot_id;
+            // });
           });
       });
   },

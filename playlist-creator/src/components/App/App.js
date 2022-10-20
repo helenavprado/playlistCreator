@@ -35,19 +35,19 @@ class App extends React.Component {
           name: "ovelha negra",
           artist: "rita lee",
           album: "amor e sexo",
-          id: 1,
+          id: 4,
         },
         {
           name: "descobridor dos 7 mares",
           artist: "lulu santos",
           album: "areia",
-          id: 2,
+          id: 5,
         },
         {
           name: "gostava tanto de voce",
           artist: "tim maia",
           album: "voce",
-          id: 3,
+          id: 6,
         },
       ],
     };
@@ -55,16 +55,15 @@ class App extends React.Component {
   }
 
   addTrack(newTrack) {
-    if (
-      this.state.playlistTracks.find(
-        (savedTrack) => savedTrack.id === newTrack.id
-      )
-    ) {
+    let tracks = this.state.playlistTracks;
+    if (tracks.find((savedTrack) => savedTrack.id === newTrack.id)) {
       return;
     }
-    let newPlaylist = this.state.playlistTracks.push(newTrack);
+
+    tracks.push(newTrack);
+
     this.setState({
-      playlistTracks: newPlaylist,
+      playlistTracks: tracks,
     });
   }
 
@@ -84,7 +83,7 @@ class App extends React.Component {
             <Playlist
               playListName={this.state.playListName}
               playlistTracks={this.state.playlistTracks}
-              onRemove={this.addTrack}
+              // onRemove={}
             />
           </div>
         </div>
